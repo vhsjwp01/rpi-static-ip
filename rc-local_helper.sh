@@ -28,13 +28,22 @@ if [ "${this_uid}" = "root" ]; then
     let rc_local_exists=$(egrep -c "${static_ip_script}" /etc/rc.local 2> /dev/null)
 
     if [ ${rc_local_exists} -eq 0 -a -x "${static_ip_script}" ]; then
-        exit_line=$(egrep "^exit.*$" "${rc_local_file}" | tail -1)
+        exit_line=$(egrep -n "^exit.*$" "${rc_local_file}" | tail -1)
 
         if [ -z "${exit_line}" ]; then
             exit_line="exit 0"
+        else
+            exit_line_number=$(echo "${exit_line}" | awk -F':' '{print $1}')
         fi
 
         echo "  Seeding '${rc_local_file}' with '${static_ip_script}'"
+
+        # Flush the last exit line from the file, if defined
+        if [ ! -z "${exit_line_number}" ]; then
+            sed -i -e "${exit_line_number}d" "${rc_local_file}"
+            exit_line=$(echo "${exit_line}" | sed -e 's|^[0-9]*:||g')
+        fi
+
         cat >> "${rc_local_file}" <<EORCL
 
 # Start up static networking (if possible)
