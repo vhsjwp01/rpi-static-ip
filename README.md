@@ -1,5 +1,5 @@
 # RPi Static IP
-A simple shell script meant for injection into /etc/rc.local to setup a static IP address on a raspberry pi
+A simple shell script meant for injection into `/etc/rc.local` to setup a static IP address on a raspberry pi
 
 ### Prerequisites
 * A working systemd based Linux distro
